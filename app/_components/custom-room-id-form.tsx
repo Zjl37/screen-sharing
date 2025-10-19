@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { ChevronRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
 export function CustomRoomIdForm() {
+    const t = useTranslations("CustomRoomIdForm");
     const [isOpen, setIsOpen] = useState(false);
     const [customRoomId, setCustomRoomId] = useState("");
 
@@ -18,17 +20,17 @@ export function CustomRoomIdForm() {
             <CollapsibleTrigger asChild>
                 <Button variant="ghost" className="text-muted-foreground text-xs">
                     <ChevronRightIcon className={cn("transition-transform", isOpen && "rotate-90")} />
-                    Need a custom room ID?
+                    {t("trigger-text")}
                 </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                    <Label htmlFor="custom-id">Custom Room ID</Label>
-                    <Input id="custom-id" placeholder="my-presentation-room" value={customRoomId} onChange={(e) => setCustomRoomId(e.target.value)} />
-                    <span className="text-muted-foreground text-sm md:max-w-90">Must start and end with a letter or number. Dashes, underscores, and spaces allowed in between.</span>
+                    <Label htmlFor="custom-id">{t("label")}</Label>
+                    <Input id="custom-id" placeholder={t("placeholder")} value={customRoomId} onChange={(e) => setCustomRoomId(e.target.value)} />
+                    <span className="text-muted-foreground text-sm md:max-w-90">{t("description")}</span>
                 </div>
                 <Button variant="outline" disabled={!customRoomId} asChild={!!customRoomId}>
-                    <Link href={`/host?room=${customRoomId}`}>Create Room with Custom ID</Link>
+                    <Link href={`/host?room=${customRoomId}`}>{t("button-text")}</Link>
                 </Button>
             </CollapsibleContent>
         </Collapsible>

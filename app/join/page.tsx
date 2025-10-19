@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Peer from "peerjs";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function JoinPage() {
+    const tc = useTranslations("Common");
+    const t = useTranslations("JoinPage");
     const [roomId, setRoomId] = useState("");
     const [isConnecting, setIsConnecting] = useState(false);
     const [activeStream, setActiveStream] = useState<MediaStream | null>(null);
@@ -40,8 +43,8 @@ export default function JoinPage() {
 
     function joinRoom(roomIdToJoin: string = roomId) {
         if (!roomIdToJoin.trim()) {
-            toast.error("Room code required", {
-                description: "Please enter a valid room code."
+            toast.error(t("code-required"), {
+                description: t("code-required-desc")
             });
             return;
         }
@@ -55,8 +58,8 @@ export default function JoinPage() {
             const connection = peer.connect(roomIdToJoin);
 
             connection.on("open", () => {
-                toast.success("Connected!", {
-                    description: "Waiting for host to share their screen..."
+                toast.success(t("connected"), {
+                    description: t("connected-desc")
                 });
             });
 
@@ -71,8 +74,8 @@ export default function JoinPage() {
                 setIsConnecting(false);
                 setRoomId("");
                 setActiveStream(null);
-                toast.error("Disconnected", {
-                    description: "The session has been ended."
+                toast.error(t("disconnected"), {
+                    description: t("disconnected-desc")
                 });
             });
         });
@@ -80,8 +83,8 @@ export default function JoinPage() {
         peer.on("error", (err) => {
             console.error("Peer error:", err);
             setIsConnecting(false);
-            toast.error("Connection failed", {
-                description: "Could not connect to the room. Please check the room code and try again."
+            toast.error(t("connection-failed"), {
+                description: t("connection-failed-desc")
             });
         });
     }
@@ -91,7 +94,7 @@ export default function JoinPage() {
             <Button variant="outline" asChild>
                 <Link href="/" className="flex items-center self-start">
                     <ArrowLeft />
-                    Back to Home
+                    {tc("back-to-home")}
                 </Link>
             </Button>
 
@@ -99,16 +102,16 @@ export default function JoinPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Users />
-                        Join a Room
+                        {t("title")}
                     </CardTitle>
-                    <CardDescription>Enter the room code to join and view the shared screen</CardDescription>
+                    <CardDescription>{t("description")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {!activeStream ? (
                         <div className="flex flex-col gap-4">
-                            <Input placeholder="Enter room code" value={roomId} onChange={(e) => setRoomId(e.target.value)} disabled={isConnecting} />
+                            <Input placeholder={t("enter-code")} value={roomId} onChange={(e) => setRoomId(e.target.value)} disabled={isConnecting} />
                             <Button className="w-full" onClick={() => joinRoom()} disabled={isConnecting || !roomId.trim()}>
-                                {isConnecting ? "Connecting..." : "Join Room"}
+                                {isConnecting ? t("connecting") : t("join-room")}
                             </Button>
                         </div>
                     ) : (

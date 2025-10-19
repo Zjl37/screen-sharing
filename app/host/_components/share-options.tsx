@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CopyIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 interface ShareOptionsProps {
@@ -9,27 +10,29 @@ interface ShareOptionsProps {
 }
 
 export function ShareOptions({ roomId }: ShareOptionsProps) {
+    const t = useTranslations("ShareOptions");
+
     function copyRoomId() {
         navigator.clipboard.writeText(roomId);
-        toast.success("Room code copied!", {
-            description: "Share this code with others to let them join your room."
+        toast.success(t("code-copied"), {
+            description: t("code-copied-desc")
         });
     }
 
     function copyShareableLink() {
         const shareableUrl = `${window.location.origin}/join?room=${roomId}`;
         navigator.clipboard.writeText(shareableUrl);
-        toast.success("Shareable link copied!", {
-            description: "Share this link with others to let them join your room directly."
+        toast.success(t("link-copied"), {
+            description: t("link-copied-desc")
         });
     }
 
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-                <p className="text-muted-foreground text-sm">Room Code</p>
+                <p className="text-muted-foreground text-sm">{t("room-code")}</p>
                 <code className="bg-muted flex w-full items-center justify-between gap-2 rounded-lg p-3 font-mono text-sm tracking-tight">
-                    {roomId || "Generating room code..."}
+                    {roomId || t("generating-code")}
                     <Button variant="ghost" size="sm" onClick={copyRoomId} disabled={!roomId} className="text-muted-foreground size-4">
                         <CopyIcon />
                     </Button>
@@ -46,9 +49,9 @@ export function ShareOptions({ roomId }: ShareOptionsProps) {
             </div>
 
             <div className="flex flex-col gap-2">
-                <p className="text-muted-foreground text-sm">Shareable Link</p>
+                <p className="text-muted-foreground text-sm">{t("shareable-link")}</p>
                 <code className="bg-muted flex w-full items-center justify-between gap-2 rounded-lg p-3 font-mono text-sm tracking-tight">
-                    {roomId ? `${window.location.origin}/join?room=${roomId}` : "Generating link..."}
+                    {roomId ? `${window.location.origin}/join?room=${roomId}` : t("generating-link")}
                     <Button variant="ghost" size="sm" onClick={copyShareableLink} disabled={!roomId} className="text-muted-foreground size-4">
                         <CopyIcon />
                     </Button>

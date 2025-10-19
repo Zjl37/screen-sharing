@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Monitor, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Peer from "peerjs";
@@ -11,6 +12,8 @@ import { toast } from "sonner";
 import { ShareOptions } from "./_components/share-options";
 
 export default function HostPage() {
+    const tc = useTranslations("Common");
+    const t = useTranslations("HostPage");
     const [roomId, setRoomId] = useState("");
     const [peer, setPeer] = useState<Peer | null>(null);
     const [activeStream, setActiveStream] = useState<MediaStream | null>(null);
@@ -29,7 +32,7 @@ export default function HostPage() {
             });
 
             newPeer.on("error", (err) => {
-                toast.error("Failed to create room", {
+                toast.error(t("room-creation-failed"), {
                     description: err.message
                 });
                 router.push("/");
@@ -47,8 +50,8 @@ export default function HostPage() {
             };
         } catch (error) {
             console.error("Error initializing peer:", error);
-            toast.error("Failed to create room", {
-                description: "Please try again."
+            toast.error(t("room-creation-failed"), {
+                description: t("room-creation-failed-desc")
             });
             router.push("/");
         }
@@ -58,11 +61,11 @@ export default function HostPage() {
         if (!peer) return;
 
         if (!activeStream && connections.length > 0) {
-            toast.info("New viewer connected", {
-                description: "Click to start sharing your screen.",
+            toast.info(t("new-viewer"), {
+                description: t("new-viewer-desc"),
                 duration: Infinity,
                 action: {
-                    label: "Start Sharing",
+                    label: t("start-sharing"),
                     onClick: async () => {
                         try {
                             const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -72,8 +75,8 @@ export default function HostPage() {
                             setActiveStream(stream);
                         } catch (err) {
                             console.error("Screen sharing error:", err);
-                            toast.error("Screen sharing error", {
-                                description: "Failed to start screen sharing. Please try again."
+                            toast.error(t("share-error"), {
+                                description: t("share-error-desc")
                             });
                         }
                     }
@@ -101,8 +104,8 @@ export default function HostPage() {
         }
         setConnections([]);
         setRoomId("");
-        toast.info("Session ended", {
-            description: "Your screen sharing session has been terminated."
+        toast.info(t("session-ended"), {
+            description: t("session-ended-desc")
         });
         router.push("/");
     }
@@ -113,7 +116,7 @@ export default function HostPage() {
                 <Button variant="outline" asChild>
                     <Link href="/" className="flex items-center self-start">
                         <ArrowLeft />
-                        Back to Home
+                        {tc("back-to-home")}
                     </Link>
                 </Button>
 
@@ -121,22 +124,22 @@ export default function HostPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Monitor />
-                            Your Screen Sharing Room
+                            {t("title")}
                         </CardTitle>
-                        <CardDescription>Share your room code or link with others to let them view your screen. To share audio as well, ensure you're using Chrome or Edge, and select the option to share a tab.</CardDescription>
+                        <CardDescription>{t("description")}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
                         <ShareOptions roomId={roomId} />
                         <div className="bg-muted/50 flex items-center justify-between rounded-lg p-4">
                             <div className="text-muted-foreground flex items-center gap-2">
                                 <Users className="size-4" />
-                                <span className="text-sm">Current Viewers</span>
+                                <span className="text-sm">{t("current-viewers")}</span>
                             </div>
                             <span className="text-lg font-semibold">{connections.length}</span>
                         </div>
                         {activeStream && (
                             <Button variant="destructive" onClick={endSession} className="self-end">
-                                Stop sharing
+                                {t("stop-sharing")}
                             </Button>
                         )}
                     </CardContent>
